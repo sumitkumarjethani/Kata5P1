@@ -1,19 +1,28 @@
-package kata5p1;
+package Controller;
 
+import View.MailListReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+
 
 public class Kata5P1 {
 
     public static void main(String[] args) {
-        selectAll();
         String query = "CREATE TABLE IF NOT EXISTS A(\n"
                      + " id integer PRIMARY KEY AUTOINCREMENT,\n"
                      + " mail text NOT NULL);";
         createTable(query);
+        String fileName = new String("email.txt");
+        List<String> mailList = MailListReader.read(fileName);
+        truncate();
+        for (String mail : mailList) {
+            insert(mail);
+        }
     }
     
     public static void selectAll(){
@@ -40,7 +49,6 @@ public class Kata5P1 {
         try {
             String url = "jdbc:sqlite:kata5.db";
             con = DriverManager.getConnection(url);
-            System.out.println("Conexión a SQLite establecida");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -53,6 +61,29 @@ public class Kata5P1 {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(query);
             System.out.println("Tabla creada");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private static void insert(String email) {
+        try {
+            String sql = "INSERT INTO A(mail) VALUES(?)";
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private static void truncate() {
+        try {
+            String sql = "delete from A";
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
