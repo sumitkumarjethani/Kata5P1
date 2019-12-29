@@ -10,6 +10,10 @@ public class Kata5P1 {
 
     public static void main(String[] args) {
         selectAll();
+        String query = "CREATE TABLE IF NOT EXISTS A(\n"
+                     + " id integer PRIMARY KEY AUTOINCREMENT,\n"
+                     + " mail text NOT NULL);";
+        createTable(query);
     }
     
     public static void selectAll(){
@@ -41,6 +45,17 @@ public class Kata5P1 {
             System.out.println(ex.getMessage());
         }
         return con;
+    }
+
+    private static void createTable(String query) {
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(query);
+            System.out.println("Tabla creada");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
     
 }
